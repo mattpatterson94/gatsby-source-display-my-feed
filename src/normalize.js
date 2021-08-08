@@ -46,7 +46,7 @@ const createFileNode = async ({
 
 /**
  * Download media files.
- * @param {object} agrugments - The good stuff.
+ * @param {object} arguments - The good stuff.
  * @returns {object} datum - Media data.
  */
 exports.downloadMediaFile = async ({
