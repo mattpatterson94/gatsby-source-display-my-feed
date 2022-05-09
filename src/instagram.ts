@@ -1,5 +1,4 @@
-/* eslint-disable camelcase */
-const axios = require(`axios`)
+import axios from "axios"
 
 export async function apiInstagramPosts({ authToken, maxPosts }) {
   return axios
@@ -7,7 +6,7 @@ export async function apiInstagramPosts({ authToken, maxPosts }) {
       `https://display-my-feed.herokuapp.com/api/v1/feed.json?token=${authToken}`
     )
     .then(async (response) => {
-      const results = []
+      const results: any[] = []
       results.push(...response.data.media)
 
       /**

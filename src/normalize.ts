@@ -1,10 +1,8 @@
-"use strict"
-
-const { createRemoteFileNode } = require(`gatsby-source-filesystem`)
+import { createRemoteFileNode } from "gatsby-source-filesystem"
 
 /**
  * Create file nodes to be used by gatsby image.
- * @param {object} agrugments - The good stuff.
+ * @param {object} arguments - The good stuff.
  * @returns {number} fileNodeID - Unique identifier.
  */
 const createFileNode = async ({
@@ -12,6 +10,8 @@ const createFileNode = async ({
   preview,
   store,
   cache,
+  reporter,
+  getNode,
   createNode,
   createNodeId,
   touchNode,
@@ -22,7 +22,7 @@ const createFileNode = async ({
 
   if (cacheMediaData) {
     fileNodeID = cacheMediaData.fileNodeID
-    touchNode({ nodeId: fileNodeID })
+    touchNode(getNode(fileNodeID))
     return fileNodeID
   }
 
@@ -33,12 +33,14 @@ const createFileNode = async ({
       cache,
       createNode,
       createNodeId,
+      reporter,
     })
+
     fileNodeID = fileNode.id
 
     await cache.set(mediaDataCacheKey, { fileNodeID })
   } catch (error) {
-    console.error(`Could not dowcreate remote file noden, error is: `, error)
+    console.error(`Could not create remote file node, error is: `, error)
   }
 
   return fileNodeID
@@ -49,14 +51,16 @@ const createFileNode = async ({
  * @param {object} arguments - The good stuff.
  * @returns {object} datum - Media data.
  */
-exports.downloadMediaFile = async ({
+export async function downloadMediaFile({
   datum,
   store,
   cache,
   createNode,
+  getNode,
+  reporter,
   createNodeId,
   touchNode,
-}) => {
+}) {
   const { carouselImages, id, preview } = datum
 
   /** Create a file node for base image */
@@ -65,7 +69,9 @@ exports.downloadMediaFile = async ({
     preview,
     store,
     cache,
+    getNode,
     createNode,
+    reporter,
     createNodeId,
     touchNode,
   })
@@ -79,14 +85,17 @@ exports.downloadMediaFile = async ({
   /** Loop over all carousel images and create a local file node for each */
   for (let i = 0; i < carouselImages.length; i++) {
     const { id: imgId, preview: imgPreview } = carouselImages[i]
+
     const carouselFileNodeID = await createFileNode({
       id: imgId,
       preview: imgPreview,
       store,
       cache,
+      getNode,
       createNode,
       createNodeId,
       touchNode,
+      reporter,
     })
 
     /** eslint-disable-next-line require-atomic-updates */

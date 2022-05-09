@@ -1,8 +1,8 @@
-const _ = require(`lodash`)
-const crypto = require(`crypto`)
-const normalize = require(`./normalize`)
-
-const { apiInstagramPosts } = require(`./instagram`)
+import { get } from "lodash"
+import { SourceNodesArgs } from "gatsby"
+import { createHash } from "crypto"
+import { downloadMediaFile } from "./normalize"
+import { apiInstagramPosts } from "./instagram"
 
 const defaultOptions = { type: `account` }
 
@@ -24,6 +24,7 @@ function createPostNode(datum, params) {
     parent: `__SOURCE__`,
     internal: {
       type: `InstaNode`,
+      contentDigest: ``,
     },
     children: [],
     caption: datum.caption,
@@ -32,7 +33,7 @@ function createPostNode(datum, params) {
     original: datum.media_url,
     timestamp: new Date(datum.timestamp).getTime() / 1000,
     permalink: datum.permalink,
-    carouselImages: _.get(datum, `children`, []).map((imgObj) => {
+    carouselImages: get(datum, `children`, []).map((imgObj) => {
       return {
         preview: imgObj.thumbnail_url || imgObj.media_url,
         ...imgObj,
@@ -44,24 +45,22 @@ function createPostNode(datum, params) {
 function processDatum(datum, params) {
   const node = createPostNode(datum, params)
 
-  // Get content digest of node. (Required field)
-  const contentDigest = crypto
-    .createHash(`md5`)
+  node.internal.contentDigest = createHash(`md5`)
     .update(JSON.stringify(node))
     .digest(`hex`)
-  node.internal.contentDigest = contentDigest
+
   return node
 }
 
 exports.sourceNodes = async (
-  { actions, store, cache, createNodeId },
+  { actions, store, cache, getNode, createNodeId, reporter }: SourceNodesArgs,
   options
 ) => {
   const { createNode, touchNode } = actions
   const params = { ...defaultOptions, ...options }
   let data
 
-  if (params.type === `account`) {
+  if (params?.type === `account`) {
     data = await getInstagramPosts(params)
   } else {
     console.warn(
@@ -73,14 +72,17 @@ exports.sourceNodes = async (
   if (data) {
     return Promise.all(
       data.map(async (datum) => {
-        const res = await normalize.downloadMediaFile({
+        const res = await downloadMediaFile({
           datum: processDatum(datum, params),
           store,
           cache,
+          reporter,
+          getNode,
           createNode,
           createNodeId,
           touchNode,
         })
+
         createNode(res)
       })
     )

@@ -1,18 +1,20 @@
 {
   "name": "gatsby-source-display-my-feed",
   "description": "Gatsby source plugin for fetching instagram feed from DisplayMyFeed",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Matt Patterson <hey@mattdoesdev.com>",
   "main": "index.js",
   "bugs": {
     "url": "https://github.com/mattpatterson94/gatsby-source-display-my-feed/issues"
   },
   "dependencies": {
-    "axios": "^0.20.0"
+    "axios": "^0.20.0",
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@babel/cli": "7.11.6",
     "@babel/core": "7.11.6",
+    "@babel/preset-typescript": "^7.16.7",
     "babel-eslint": "10.1.0",
     "babel-preset-gatsby-package": "0.5.3",
     "cross-env": "7.0.2",
@@ -23,7 +25,8 @@
     "eslint-plugin-jsx-a11y": "6.3.1",
     "eslint-plugin-prettier": "3.1.4",
     "eslint-plugin-react": "7.20.6",
-    "prettier": "2.1.2"
+    "prettier": "2.1.2",
+    "typescript": "^4.6.4"
   },
   "homepage": "https://github.com/oorestisime/gatsby-source-instagram",
   "keywords": [
@@ -32,12 +35,14 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "gatsby-source-filesystem": "^2.0.27",
-    "gatsby": ">2.0.0-alpha"
+    "gatsby": ">= 4.0.0",
+    "gatsby-source-filesystem": "^4.13.0"
   },
   "repository": "https://github.com/mattpatterson94/gatsby-source-display-my-feed",
   "scripts": {
-    "build": "babel src --out-dir . --ignore **/__tests__",
+    "build": "yarn build:types && yarn build:js",
+    "build:types": "tsc --emitDeclarationOnly",
+    "build:js": "babel src --out-dir . --ignore **/__tests__ --extensions \".ts,.tsx\"",
     "prepare": "cross-env NODE_ENV=production npm run build",
     "watch": "babel -w src --out-dir . --ignore **/__tests__"
   }
