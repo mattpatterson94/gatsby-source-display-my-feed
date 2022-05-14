@@ -9,7 +9,9 @@
   },
   "dependencies": {
     "axios": "^0.20.0",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "gatsby": ">= 4.0.0",
+    "gatsby-source-filesystem": "^4.8.0"
   },
   "devDependencies": {
     "@babel/cli": "7.11.6",
@@ -34,10 +36,6 @@
     "gatsby-plugin"
   ],
   "license": "MIT",
-  "peerDependencies": {
-    "gatsby": ">= 4.0.0",
-    "gatsby-source-filesystem": "^4.13.0"
-  },
   "repository": "https://github.com/mattpatterson94/gatsby-source-display-my-feed",
   "scripts": {
     "build": "yarn build:types && yarn build:js",

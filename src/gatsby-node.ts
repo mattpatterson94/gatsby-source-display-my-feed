@@ -52,7 +52,7 @@ function processDatum(datum, params) {
   return node
 }
 
-exports.sourceNodes = async (
+export const sourceNodes = async (
   { actions, store, cache, getNode, createNodeId, reporter }: SourceNodesArgs,
   options
 ) => {
